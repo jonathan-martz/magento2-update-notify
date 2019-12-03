@@ -8,8 +8,14 @@
             "email": "github@jmartz.de"
         }
     ],
-    "require": {},
+    "require": {
+        "php": "^7.1|^7.2|^7.3|^7.4",
+        "ext-json": "*"
+    },
     "autoload": {
+        "files": [
+            "registration.php"
+        ],
         "psr-4": {
             "JonathanMartz\\MagentoUpdateNotify\\": "Cron"
         }
