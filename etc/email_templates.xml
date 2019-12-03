@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Email:etc/email_templates.xsd">
-    <template id="magento_update_notify" label="This is email demo" file="magento_update_notify.html" type="html" module="JonathanMartz_MagentoUpdateNotify" area="frontend"/>
+    <template id="magento_update_notify" label="Email template for Update Notify" file="magento_update_notify.html" type="html" module="JonathanMartz_MagentoUpdateNotify" area="frontend"/>
 </config>

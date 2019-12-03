@@ -168,7 +168,6 @@ class Notify
                     ]
                 )
                 ->setTemplateVars([
-                    'templateVar' => 'My Topic',
                     'version' => $version,
                     'latest' => $latest,
                     'short_version' => $this->getShortVersion($latest),
