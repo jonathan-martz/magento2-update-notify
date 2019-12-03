@@ -1,0 +1,17 @@
+{
+    "name": "jonathan-martz/magento2-update-notify",
+    "type": "magento2-module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "jonathan-martz",
+            "email": "github@jmartz.de"
+        }
+    ],
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "JonathanMartz\\MagentoUpdateNotify\\": "Cron"
+        }
+    }
+}

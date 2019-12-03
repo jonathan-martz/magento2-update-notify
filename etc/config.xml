@@ -1,0 +1,10 @@
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <magento>
+            <update_notify>
+                <contact_email>info@flagbit.de</contact_email>
+                <contact_website>www.flagbit.de</contact_website>
+            </update_notify>
+        </magento>
+    </default>
+</config>
