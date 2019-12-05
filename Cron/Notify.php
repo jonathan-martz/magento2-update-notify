@@ -39,6 +39,16 @@ class Notify
      */
     const XML_PATH_MINOR_RELEASE = 'magento/update_notify/minor_release';
 
+    /**
+     * Email Developer
+     */
+    const XML_PATH_EMAIL_DEVELOPER = 'magento/update_notify/email_developer';
+
+    /**
+     * Email Customer
+     */
+    const XML_PATH_EMAIL_CUSTOMER = 'magento/update_notify/email_customer';
+
 
     /**
      * @var ProductMetadataInterface
@@ -210,6 +220,18 @@ class Notify
     public function sendEmail(string $version, string $latest, string $release)
     {
         $sender = $this->scopeConfig->getValue(self::XML_PATH_EMAIL_RECIPIENT);
+        $developer = $this->scopeConfig->getValue(self::XML_PATH_EMAIL_DEVELOPER);
+        $customer = $this->scopeConfig->getValue(self::XML_PATH_EMAIL_CUSTOMER);
+
+        $emails = [];
+
+        if(!empty($customer)){
+            $emails[] = $customer;
+        }
+
+        if(!empty($developer)){
+            $emails[] = $developer;
+        }
 
         try {
             $this->inlineTranslation->suspend();
@@ -233,9 +255,21 @@ class Notify
                     'website' => $this->scopeConfig->getValue(self::XML_PATH_CONTACT_WEBSITE),
                     'release_notice' => $this->generateMessageRelease($release)
                 ])
-                ->setFromByScope($sender)
-                ->addTo($sender['email'])
-                ->getTransport();
+                ->setFromByScope($sender);
+
+            if(count($emails) === 0){
+                $transport = $transport->addTo($sender['email']);
+            }
+            else if(count($emails) === 1){
+                $transport = $transport->addTo($emails[0]);
+            }
+            else if(count($emails) === 2){
+                $transport = $transport->addTo($emails[0]);
+                $transport = $transport->addCc($emails[1]);
+            }
+
+            $transport= $transport->getTransport();
+
             $transport->sendMessage();
             $this->inlineTranslation->resume();
         } catch (\Exception $e) {
