@@ -2,8 +2,11 @@
     <default>
         <magento>
             <update_notify>
+                <enable>1</enable>
                 <contact_email>info@flagbit.de</contact_email>
                 <contact_website>www.flagbit.de</contact_website>
+                <major_release>1</major_release>
+                <minor_release>1</minor_release>
             </update_notify>
         </magento>
     </default>

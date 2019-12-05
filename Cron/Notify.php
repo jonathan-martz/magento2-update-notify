@@ -30,6 +30,17 @@ class Notify
     const XML_PATH_CONTACT_WEBSITE = 'magento/update_notify/contact_website';
 
     /**
+     * Major Release
+     */
+    const XML_PATH_MAJOR_RELEASE = 'magento/update_notify/major_release';
+
+    /**
+     * Minor Release
+     */
+    const XML_PATH_MINOR_RELEASE = 'magento/update_notify/minor_release';
+
+
+    /**
      * @var ProductMetadataInterface
      */
     protected $productMetadata;
@@ -51,7 +62,6 @@ class Notify
      * @var TransportBuilder
      */
     protected $transportBuilder;
-
 
     /**
      * Notify constructor.
@@ -122,17 +132,54 @@ class Notify
     }
 
     /**
-     *
+     * @return bool
      */
-    public function execute()
+    public function notifyOnMajorRelease():bool{
+        return (bool) $this->scopeConfig->getValue(self::XML_PATH_MAJOR_RELEASE);
+    }
+
+    /**
+     * @return bool
+     */
+    public function notifyOnMinorRelease():bool{
+        return (bool) $this->scopeConfig->getValue(self::XML_PATH_MINOR_RELEASE);
+    }
+
+    /**
+     * @param $version
+     * @param $latest
+     * @return bool
+     */
+    public function isMajorRelease($version, $latest){
+        return substr($version, 0,3) !== substr($latest, 0,3);
+    }
+
+    /**
+     * @param $version
+     * @param $latest
+     * @return bool
+     */
+    public function isMinorRelease($version, $latest){
+        return $version !== $latest;
+    }
+
+    /**
+     * @return void
+     */
+    public function execute():void
     {
         $version = $this->productMetadata->getVersion();
 
         $data = $this->getLatestMagentoVersion();
         $latest = $this->loadLatestMagentoVersion($data);
 
-        if ($version === $latest) {
-            $this->sendEmail($version, $latest);
+        if($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()){
+            $this->sendEmail($version, $latest, 'major');
+        }
+        else{
+            if($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()){
+                $this->sendEmail($version, $latest, 'minor');
+            }
         }
     }
 
@@ -146,10 +193,21 @@ class Notify
     }
 
     /**
+     * @param string $release
+     * @return string
+     */
+    public function generateMessageRelease(string $release){
+        if($release == 'major'){
+            return 'This is a Major release change which means it is an big update.';
+        }
+        return 'This is a Minor release change which means it is an small update.';
+    }
+
+    /**
      * @param string $version
      * @param string $latest
      */
-    public function sendEmail(string $version, string $latest)
+    public function sendEmail(string $version, string $latest, string $release)
     {
         $sender = $this->scopeConfig->getValue(self::XML_PATH_EMAIL_RECIPIENT);
 
@@ -172,7 +230,8 @@ class Notify
                     'latest' => $latest,
                     'short_version' => $this->getShortVersion($latest),
                     'email' => $this->scopeConfig->getValue(self::XML_PATH_CONTACT_EMAIL),
-                    'website' => $this->scopeConfig->getValue(self::XML_PATH_CONTACT_WEBSITE)
+                    'website' => $this->scopeConfig->getValue(self::XML_PATH_CONTACT_WEBSITE),
+                    'release_notice' => $this->generateMessageRelease($release)
                 ])
                 ->setFromByScope($sender)
                 ->addTo($sender['email'])
