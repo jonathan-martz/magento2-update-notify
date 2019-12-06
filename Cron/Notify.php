@@ -183,12 +183,12 @@ class Notify
         $data = $this->getLatestMagentoVersion();
         $latest = $this->loadLatestMagentoVersion($data);
 
-        if($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()){
-            $this->sendEmail($version, $latest, 'major');
+        if($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()){
+            $this->sendEmail($version, $latest, 'minor');
         }
         else{
-            if($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()){
-                $this->sendEmail($version, $latest, 'minor');
+            if($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()){
+                $this->sendEmail($version, $latest, 'major');
             }
         }
     }
@@ -273,7 +273,7 @@ class Notify
             $transport->sendMessage();
             $this->inlineTranslation->resume();
         } catch (\Exception $e) {
-            $this->logger->info('Konalo: ' . $e->getMessage());
+            $this->logger->info('MagentoUpdateNotify: '. $e->getMessage());
         }
     }
 }
