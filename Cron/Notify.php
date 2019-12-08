@@ -49,6 +49,10 @@ class Notify
      */
     const XML_PATH_EMAIL_CUSTOMER = 'magento/update_notify/email_customer';
 
+    /**
+     * Module enabled
+     */
+    const XML_PATH_ENABLED = 'magento/update_notify/enable';
 
     /**
      * @var ProductMetadataInterface
@@ -144,24 +148,17 @@ class Notify
     /**
      * @return bool
      */
-    public function notifyOnMajorRelease():bool{
-        return (bool) $this->scopeConfig->getValue(self::XML_PATH_MAJOR_RELEASE);
+    public function notifyOnMajorRelease(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::XML_PATH_MAJOR_RELEASE);
     }
 
     /**
      * @return bool
      */
-    public function notifyOnMinorRelease():bool{
-        return (bool) $this->scopeConfig->getValue(self::XML_PATH_MINOR_RELEASE);
-    }
-
-    /**
-     * @param $version
-     * @param $latest
-     * @return bool
-     */
-    public function isMajorRelease($version, $latest){
-        return substr($version, 0,3) !== substr($latest, 0,3);
+    public function notifyOnMinorRelease(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::XML_PATH_MINOR_RELEASE);
     }
 
     /**
@@ -169,26 +166,44 @@ class Notify
      * @param $latest
      * @return bool
      */
-    public function isMinorRelease($version, $latest){
+    public function isMajorRelease($version, $latest)
+    {
+        return substr($version, 0, 3) !== substr($latest, 0, 3);
+    }
+
+    /**
+     * @param $version
+     * @param $latest
+     * @return bool
+     */
+    public function isMinorRelease($version, $latest)
+    {
         return $version !== $latest;
     }
+
+    public function isEnabled()
+    {
+        return (bool)$this->scopeConfig->getValue(self::XML_PATH_ENABLED);
+    }
+
 
     /**
      * @return void
      */
-    public function execute():void
+    public function execute(): void
     {
-        $version = $this->productMetadata->getVersion();
+        if ($this->isEnabled()) {
+            $version = $this->productMetadata->getVersion();
 
-        $data = $this->getLatestMagentoVersion();
-        $latest = $this->loadLatestMagentoVersion($data);
+            $data = $this->getLatestMagentoVersion();
+            $latest = $this->loadLatestMagentoVersion($data);
 
-        if($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()){
-            $this->sendEmail($version, $latest, 'minor');
-        }
-        else{
-            if($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()){
-                $this->sendEmail($version, $latest, 'major');
+            if ($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()) {
+                $this->sendEmail($version, $latest, 'minor');
+            } else {
+                if ($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()) {
+                    $this->sendEmail($version, $latest, 'major');
+                }
             }
         }
     }
@@ -206,8 +221,9 @@ class Notify
      * @param string $release
      * @return string
      */
-    public function generateMessageRelease(string $release){
-        if($release == 'major'){
+    public function generateMessageRelease(string $release)
+    {
+        if ($release == 'major') {
             return 'This is a Major release change which means it is an big update.';
         }
         return 'This is a Minor release change which means it is an small update.';
@@ -225,11 +241,11 @@ class Notify
 
         $emails = [];
 
-        if(!empty($customer)){
+        if (!empty($customer)) {
             $emails[] = $customer;
         }
 
-        if(!empty($developer)){
+        if (!empty($developer)) {
             $emails[] = $developer;
         }
 
@@ -257,23 +273,21 @@ class Notify
                 ])
                 ->setFromByScope($sender);
 
-            if(count($emails) === 0){
+            if (count($emails) === 0) {
                 $transport = $transport->addTo($sender['email']);
-            }
-            else if(count($emails) === 1){
+            } else if (count($emails) === 1) {
                 $transport = $transport->addTo($emails[0]);
-            }
-            else if(count($emails) === 2){
+            } else if (count($emails) === 2) {
                 $transport = $transport->addTo($emails[0]);
                 $transport = $transport->addCc($emails[1]);
             }
 
-            $transport= $transport->getTransport();
+            $transport = $transport->getTransport();
 
             $transport->sendMessage();
             $this->inlineTranslation->resume();
         } catch (\Exception $e) {
-            $this->logger->info('MagentoUpdateNotify: '. $e->getMessage());
+            $this->logger->info('MagentoUpdateNotify: ' . $e->getMessage());
         }
     }
 }
