@@ -1,6 +1,6 @@
 <config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
     <default>
-        <magento>
+        <magentoupdatenotify>
             <update_notify>
                 <enable>1</enable>
                 <contact_email>info@flagbit.de</contact_email>
@@ -10,6 +10,6 @@
                 <email_developer>magento2@jmartz.de</email_developer>
                 <email_customer>jonathan.martz@flagbit.de</email_customer>
             </update_notify>
-        </magento>
+        </magentoupdatenotify>
     </default>
 </config>

@@ -7,7 +7,7 @@
             <label>MagentoUpdateNotify</label>
             <tab>security</tab>
             <resource>JonathanMartz_MagentoUpdateNotify::config</resource>
-            <group id="update_notify" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
+            <group id="general" translate="label" type="text" sortOrder="2" showInDefault="1" showInWebsite="1"
                    showInStore="1">
                 <label>General Configuration</label>
                 <field id="enable" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0"

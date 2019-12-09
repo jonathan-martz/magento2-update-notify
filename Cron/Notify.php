@@ -23,36 +23,36 @@ class Notify
     /**
      * Contact Email
      */
-    const XML_PATH_CONTACT_EMAIL = 'magento/update_notify/contact_email';
+    const XML_PATH_CONTACT_EMAIL = 'magentoupdatenotify/general/contact_email';
     /**
      * Contact Website
      */
-    const XML_PATH_CONTACT_WEBSITE = 'magento/update_notify/contact_website';
+    const XML_PATH_CONTACT_WEBSITE = 'magentoupdatenotify/general/contact_website';
 
     /**
      * Major Release
      */
-    const XML_PATH_MAJOR_RELEASE = 'magento/update_notify/major_release';
+    const XML_PATH_MAJOR_RELEASE = 'magentoupdatenotify/general/major_release';
 
     /**
      * Minor Release
      */
-    const XML_PATH_MINOR_RELEASE = 'magento/update_notify/minor_release';
+    const XML_PATH_MINOR_RELEASE = 'magentoupdatenotify/general/minor_release';
 
     /**
      * Email Developer
      */
-    const XML_PATH_EMAIL_DEVELOPER = 'magento/update_notify/email_developer';
+    const XML_PATH_EMAIL_DEVELOPER = 'magentoupdatenotify/general/email_developer';
 
     /**
      * Email Customer
      */
-    const XML_PATH_EMAIL_CUSTOMER = 'magento/update_notify/email_customer';
+    const XML_PATH_EMAIL_CUSTOMER = 'magentoupdatenotify/general/email_customer';
 
     /**
      * Module enabled
      */
-    const XML_PATH_ENABLED = 'magento/update_notify/enable';
+    const XML_PATH_ENABLED = 'magentoupdatenotify/general/enable';
 
     /**
      * @var ProductMetadataInterface
