@@ -10,7 +10,8 @@
     ],
     "require": {
         "php": "^7.1|^7.2|^7.3|^7.4",
-        "ext-json": "*"
+        "ext-json": "*",
+        "ext-curl": "*"
     },
     "autoload": {
         "files": [
