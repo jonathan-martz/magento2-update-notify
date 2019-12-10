@@ -40,6 +40,11 @@ class Notify
     const XML_PATH_MINOR_RELEASE = 'magentoupdatenotify/general/minor_release';
 
     /**
+     * Patch Release
+     */
+    const XML_PATH_PATCH_RELEASE = 'magentoupdatenotify/general/patch_release';
+
+    /**
      * Email Developer
      */
     const XML_PATH_EMAIL_DEVELOPER = 'magentoupdatenotify/general/email_developer';
@@ -127,7 +132,7 @@ class Notify
             $data = json_decode($json, true);
 
             foreach ($data as $key => $value) {
-                if (!$this->releaseNotDevelop($value['tag_name']) && strlen($value['tag_name']) <= 5) {
+                if (!$this->releaseNotDevelop($value['tag_name'])) {
                     return $value['tag_name'];
                 }
             }
@@ -178,12 +183,20 @@ class Notify
      */
     public function isMinorRelease($version, $latest)
     {
-        return $version !== $latest;
+        return substr($version, 0, 5) !== substr($latest, 0, 5);
     }
 
     public function isEnabled()
     {
         return (bool)$this->scopeConfig->getValue(self::XML_PATH_ENABLED);
+    }
+
+    public function isPatchRelease($version, $latest){
+        return $version !== $latest;
+    }
+
+    public function notifyOnPatchRelease(){
+        return (bool)$this->scopeConfig->getValue(self::XML_PATH_PATCH_RELEASE);
     }
 
 
@@ -198,11 +211,17 @@ class Notify
             $data = $this->getLatestMagentoVersion();
             $latest = $this->loadLatestMagentoVersion($data);
 
-            if ($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()) {
-                $this->sendEmail($version, $latest, 'minor');
-            } else {
-                if ($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()) {
-                    $this->sendEmail($version, $latest, 'major');
+            if ($this->isPatchRelease($version, $latest) && $this->notifyOnPatchRelease()) {
+                $this->sendEmail($version, $latest, 'patch');
+            }
+            else{
+                if ($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()) {
+                    $this->sendEmail($version, $latest, 'minor');
+                }
+                else {
+                    if ($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()) {
+                        $this->sendEmail($version, $latest, 'major');
+                    }
                 }
             }
         }
@@ -283,7 +302,7 @@ class Notify
             }
 
             $transport = $transport->getTransport();
-
+            
             $transport->sendMessage();
             $this->inlineTranslation->resume();
         } catch (\Exception $e) {

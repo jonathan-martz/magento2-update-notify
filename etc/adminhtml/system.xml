@@ -35,6 +35,11 @@
                     <label>Notify on Minor Release</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
+                <field id="patch_release" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0"
+                       showInStore="0">
+                    <label>Notify on Path Release</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
                 <field id="email_customer" translate="label" type="text" sortOrder="1" showInDefault="1"
                        showInWebsite="0" showInStore="0">
                     <label>Email Customer</label>
