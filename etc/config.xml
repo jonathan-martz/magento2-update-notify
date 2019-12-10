@@ -7,9 +7,14 @@
                 <contact_website>www.flagbit.de</contact_website>
                 <major_release>1</major_release>
                 <minor_release>1</minor_release>
-                <patch_release>1</patch_release>
-                <email_developer>magento2@jmartz.de</email_developer>
-                <email_customer>jonathan.martz@flagbit.de</email_customer>
+                <patch_release>0</patch_release>
+                <email_developer></email_developer>
+                <email_customer></email_customer>
+                <enable_email>1</enable_email>
+                <enable_slack>0</enable_slack>
+                <slack_token></slack_token>
+                <slack_username>Magento Update Notify</slack_username>
+                <slack_channel></slack_channel>
             </general>
         </magentoupdatenotify>
     </default>

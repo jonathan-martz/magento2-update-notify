@@ -9,6 +9,8 @@ use \Magento\Store\Model\Store;
 use \Magento\Framework\App\Area;
 use \Psr\Log\LoggerInterface;
 use \Magento\Framework\App\Config\ScopeConfigInterface;
+use \JoliCode\Slack\ClientFactory;
+use \JoliCode\Slack\Exception\SlackErrorResponse;
 
 /**
  * Class Notify
@@ -53,6 +55,31 @@ class Notify
      * Email Customer
      */
     const XML_PATH_EMAIL_CUSTOMER = 'magentoupdatenotify/general/email_customer';
+
+    /**
+     * Email Customer
+     */
+    const XML_PATH_ENABLED_SLACK = 'magentoupdatenotify/general/enable_slack';
+
+    /**
+     * Email Customer
+     */
+    const XML_PATH_ENABLED_EMAIL = 'magentoupdatenotify/general/enable_email';
+
+    /**
+     * Email Customer
+     */
+    const XML_PATH_SLACK_TOKEN = 'magentoupdatenotify/general/slack_token';
+
+    /**
+     * Email Customer
+     */
+    const XML_PATH_SLACK_USERNAME = 'magentoupdatenotify/general/slack_username';
+
+    /**
+     * Email Customer
+     */
+    const XML_PATH_SLACK_CHANNEL = 'magentoupdatenotify/general/slack_channel';
 
     /**
      * Module enabled
@@ -191,14 +218,15 @@ class Notify
         return (bool)$this->scopeConfig->getValue(self::XML_PATH_ENABLED);
     }
 
-    public function isPatchRelease($version, $latest){
+    public function isPatchRelease($version, $latest)
+    {
         return $version !== $latest;
     }
 
-    public function notifyOnPatchRelease(){
+    public function notifyOnPatchRelease()
+    {
         return (bool)$this->scopeConfig->getValue(self::XML_PATH_PATCH_RELEASE);
     }
-
 
     /**
      * @return void
@@ -212,15 +240,30 @@ class Notify
             $latest = $this->loadLatestMagentoVersion($data);
 
             if ($this->isPatchRelease($version, $latest) && $this->notifyOnPatchRelease()) {
-                $this->sendEmail($version, $latest, 'patch');
-            }
-            else{
-                if ($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()) {
-                    $this->sendEmail($version, $latest, 'minor');
+
+                if ($this->isSlackEnabled()) {
+                    $this->sendSlackMessage($version, $latest, 'patch');
                 }
-                else {
+
+                if ($this->isEmailEnabled()) {
+                    $this->sendEmail($version, $latest, 'patch');
+                }
+            } else {
+                if ($this->isMinorRelease($version, $latest) && $this->notifyOnMinorRelease()) {
+                    if ($this->isSlackEnabled()) {
+                        $this->sendSlackMessage($version, $latest, 'minor');
+                    }
+                    if ($this->isEmailEnabled()) {
+                        $this->sendEmail($version, $latest, 'minor');
+                    }
+                } else {
                     if ($this->isMajorRelease($version, $latest) && $this->notifyOnMajorRelease()) {
-                        $this->sendEmail($version, $latest, 'major');
+                        if ($this->isSlackEnabled()) {
+                            $this->sendSlackMessage($version, $latest, 'major');
+                        }
+                        if ($this->isEmailEnabled()) {
+                            $this->sendEmail($version, $latest, 'major');
+                        }
                     }
                 }
             }
@@ -302,12 +345,64 @@ class Notify
             }
 
             $transport = $transport->getTransport();
-            
+
             $transport->sendMessage();
             $this->inlineTranslation->resume();
         } catch (\Exception $e) {
             $this->logger->info('MagentoUpdateNotify: ' . $e->getMessage());
         }
+    }
+
+    public function sendSlackMessage(string $version, string $latest, string $release)
+    {
+        $client = ClientFactory::create($this->getSlackToken());
+        try {
+            $result = $client->chatPostMessage([
+                'username' => $this->getSlackUsername(),
+                'channel' => $this->getSlackChannel(),
+                'text' => $this->getMessage($version,$latest,$release)
+            ]);
+        } catch (SlackErrorResponse $e) {
+            $this->logger->error('Fail to send the message.' . $e->getMessage());
+        }
+    }
+
+    public function isSlackEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::XML_PATH_ENABLED_SLACK);
+    }
+
+    public function isEmailEnabled(): bool
+    {
+        return (bool)$this->scopeConfig->getValue(self::XML_PATH_ENABLED_EMAIL);
+    }
+
+    public function getSlackToken(): string
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SLACK_TOKEN);
+    }
+
+    public function getSlackUsername(): string
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SLACK_USERNAME);
+    }
+
+    public function getSlackChannel(): string
+    {
+        return $this->scopeConfig->getValue(self::XML_PATH_SLACK_CHANNEL);
+    }
+
+    public function getMessage(string $version, string $latest, string $release): string
+    {
+        $message = [];
+
+        $message[] = 'Looks like your Shop needs an update.';
+        $message[] = 'Your current Version is ' . $version . '.';
+        $message[] = 'The latest Version is ' . $latest . '.';
+        $message[] = 'If you want to know which changes are made in the newest version take a look at.';
+        $message[] = 'https://devdocs.magento.com/guides/v' . $this->getShortVersion($latest) . '/release-notes/bk-release-notes.html';
+
+        return implode(PHP_EOL, $message);
     }
 }
 

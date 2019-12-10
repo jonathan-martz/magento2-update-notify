@@ -50,6 +50,33 @@
                     <label>Email Developer</label>
                     <comment>Email Developer</comment>
                 </field>
+                <field id="enable_email" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0"
+                       showInStore="0">
+                    <label>Enable Email</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="enable_slack" translate="label" type="select" sortOrder="1" showInDefault="1" showInWebsite="0"
+                       showInStore="0">
+                    <label>Enable Slack</label>
+                    <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
+                </field>
+                <field id="slack_token" translate="label" type="text" sortOrder="1" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Slack Token</label>
+                    <comment>Slack Token</comment>
+                </field>
+
+                <field id="slack_username" translate="label" type="text" sortOrder="1" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Slack Username</label>
+                    <comment>Slack Username</comment>
+                </field>
+
+                <field id="slack_channel" translate="label" type="text" sortOrder="1" showInDefault="1"
+                       showInWebsite="0" showInStore="0">
+                    <label>Slack Channel</label>
+                    <comment>Slack Channel</comment>
+                </field>
             </group>
         </section>
     </system>
